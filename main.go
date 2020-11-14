@@ -11,27 +11,12 @@ import (
 	"io/ioutil"
 	scp "github.com/bramvdbogaerde/go-scp"
 	//§"github.com/bramvdbogaerde/go-scp/auth"
-	"os/user"
 	"golang.org/x/crypto/ssh"
 	//"golang.org/x/net/websocket"
 	"github.com/gorilla/websocket"
 )
 
 var srv = websocket.Upgrader{}
-
-func (this *Application) Init () {
-	//cfg := new(Config)
-	this.Config = new(Config).Load()
-	this.Postman = nil
-	usr, err := user.Current()
-	if err !=nil {
-		fmt.Printf ( "Cant detect user in system: explain: %v\n", err )
-		return
-	}
-
-	this.Config.Userhome = usr.HomeDir
-	fmt.Printf ( "Userhome: %v\n", usr.HomeDir )
-}
 
 func (this *Application ) ReadClients () bool{
 
@@ -43,11 +28,12 @@ func (this *Application ) ReadClients () bool{
 
 func (this *Application ) Respond ( v Client ) (*Answer, error) {
 
-		filename := "/var/log/system.log"
-		remoteFileName := "system.log"
+		//filename := "/var/log/system.log"
+		filename := this.Artifact.Filename
+		remoteFileName := this.Artifact.Remotefile
 		remoteDestination := "/var/db/filestorage"
 		answ := new(Answer)
-		answ.Client = v.IP
+		answ.Client = v
 		answ.Terminated = false
 
 		sshConfig := new(ssh.ClientConfig)
@@ -80,7 +66,7 @@ func (this *Application ) Respond ( v Client ) (*Answer, error) {
 			sshConfig.User = v.Username
 			client := scp.NewClient( fmt.Sprintf ( "%s:22", v.IP ), sshConfig)
 			f, _ := os.Open( filename )
-			answ.Client = v.IP
+			answ.Client = v
 			answ.Filename = filename
 			answ.RemoteFile = strings.Join([]string{remoteDestination, remoteFileName}, "/")
 
@@ -111,30 +97,29 @@ func (this *Application ) Respond ( v Client ) (*Answer, error) {
 			defer f.Close()
 			defer client.Close()
 
+	if this.Gathering.URLStatus == false {
+		answ.Status = false
+	}
+
 	return answ, nil
 
 }
 
-func (this *Application ) checkOrigin ( r *http.Request ) bool {
-	if r.Host == this.Config.Origin {
-		fmt.Printf ( "Origin %v granted\n", r.Host )
-		return true
-	}
+func (this *Application) DefaultHandler ( w http.ResponseWriter, r *http.Request ) {
 
-	return false
-}
-
-func (this *Application) Respond_v2 ( w http.ResponseWriter, r *http.Request ) {
+	fmt.Printf ( "Received data\n" )
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-
 	srv.CheckOrigin = this.checkOrigin
-
 	c, err := srv.Upgrade(w, r, nil)
 
 	if err != nil {
-		fmt.Printf ( "Error while create updagrader: %v\n", err )
+		this.logger ( fmt.Sprintf ( "Error while create updagrader: %v\n", err ) )
 	}
+
+	_, fileName, err := c.ReadMessage()
+	this.URLParse( string ( fileName ) )
+
 
 	for _, v := range this.Config.Clients {
 
@@ -159,7 +144,8 @@ func main () {
 	go webserver.Start()
 
 	app.Postman = http.NewServeMux()
-	app.Postman.HandleFunc ( "/gathering", app.Respond_v2 )
+	//app.Postman.HandleFunc ( "/parser", app.URLParse )
+	app.Postman.HandleFunc ( "/gathering", app.DefaultHandler )
 	log.Fatal ( http.ListenAndServe(":3001", app.Postman ) )
 
 }

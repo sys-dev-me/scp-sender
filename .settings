@@ -1,28 +1,38 @@
 {
 	"DefaultLocation":"/var/db/filestorage",
 	"LogFile":"application.log",
-	"Origin":"ORIGIN_HOST:ORIGIN_PORT",
+	"Origin":"localhost",
 	"Clients" : [
 		{
 			"IP":"10.20.254.21",
-			"Username":"test"
+			"Username":"test",
+			"Version":"10.13"
 		},
 		{
 			"IP":"10.20.254.31",
-			"Username":"test"
+			"Username":"test",
+			"Version":"10.10"
 		},
 		{
 			"IP":"10.20.254.32",
-			"Username":"test"
+			"Username":"test",
+			"Version":"10.11"
 		},
 		{
 			"IP":"10.20.254.33",
-			"Username":"test"
+			"Username":"test",
+			"Version":"10.12"
 		}],
 	"Port":22,
 	"HostKey":"id_rsa",
 	"Web":{
 		"Port":3002,
-		"RootPath":"./web"
+		"RootPath":"./web",
+		"URLVariableName":"bamboo_url",
+		"RootURL":"http://localhost:3002/"
+	},
+	"Bamboo":{
+		"MountedDir":"/mnt/HC_Volume_3287720",
+		"ArtifactFolder":"bamboo/artifacts"
 	}
 }

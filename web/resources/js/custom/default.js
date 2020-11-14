@@ -1,8 +1,14 @@
 $(document).ready(function(){
 
-
+$('input[name="bamboo_artifact_url"]').val( "" );
 var idx = 0
-var hostname = "116.203.182.159"
+var hostname = "localhost"
+
+var clientCard = function ( client ) { 
+	tmp = '<address><strong>MacOS Version ' + client.Version+ '</strong><br />';
+	tmp += '<footer class="blockquote-footer">Over ' +client.Username+ ' on <cite title="Source Title">'+client.IP+' ['+client.Finger+']</cite></footer>';
+	return tmp
+}
 
 setID = function( id, content, client ) {
 
@@ -16,16 +22,23 @@ setID = function( id, content, client ) {
 	}
 
 	tpl = '<p><a class="btn btn-primary" data-toggle="collapse" href="#error-'+id+'" role="button" aria-expanded="false" aria-controls="error-'+id+'">Errors</a></p>'
-	tpl += '<div class="collapse" id="error-'+id+'"><div class="card card-body">' + client + ':<br />'+messages.join('<br />') + '</div></div>'
+	tpl += '<div class="collapse" id="error-'+id+'"><div class="card card-body">' + client.IP + ':<br />'+messages.join('<br />') + '</div></div>'
 	return tpl
 }
 
 	$("#bamboo-postman-lvl-1").on("click", function(){
-		var socket = new WebSocket("ws://" + hostname + ":3001/gathering", "Upgrade");
+	
+		$("#return_data").html('');
 
+		if ( $('input[name="bamboo_artifact_url"]').val() == "" ) {
+			alert ( "Please type URL" );
+			return
+		}
+
+		var socket = new WebSocket("ws://" + hostname + "/gathering", "Upgrade");
 		socket.onopen = function(event) {
-    	socket.send("соединение с сервером установлено");
-			 socket.send("Lets Gathering")
+			 socket.send($('input[name="bamboo_artifact_url"]').val() )
+				$('#exampleModal').modal('show');
 		};
 
 		socket.onmessage = function(event) {
@@ -34,13 +47,23 @@ setID = function( id, content, client ) {
 
 				if (respond.Status == true) {
 					Status = "Finished"
+					bg = ""
 				} else {
 					Status = "Terminated"
+					bg = "bg-warning"
 				}	
 		
-				$("#return_data").append ('<div class="row"><div class="col-sm">' + respond.Client + '</div><div class="col-sm">' + respond.Filename+ ' -> </div><div class="col-sm">' + respond.RemoteFile+ '</div><div class="col-sm">' + Status+ '</div><div class="col-sm">'+ setID( idx,  respond.Errors, respond.Client ) +'</div></div>')
+				$("#return_data").append ('<div class="row"><div class="col-sm '+bg+'">' + clientCard( respond.Client )+ '</div><div class="col-sm '+bg+'">' + respond.RemoteFile+ '</div><div class="col-sm '+bg+'">' + Status+ '</div><div class="col-sm '+bg+'">'+ setID( idx,  respond.Errors, respond.Client ) +'</div></div>')
 		idx++
 		};
 
+		socket.onclose = function ( event ) {
+
+			$("#exampleModal").modal( 'toggle' )
+		}
+
 	});
+
+
+
 })
