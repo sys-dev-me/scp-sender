@@ -1,5 +1,5 @@
 # scp-sender
-# Configure server part
+# Configure server part. JSON format (comments should be deleted)
 ```
 {
 	# this is remote folder location for files
