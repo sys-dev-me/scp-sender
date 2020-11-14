@@ -1,5 +1,6 @@
 # scp-sender
 # Configure server part. JSON format (comments should be deleted)
+> server accept bamboo URL for download artifact
 ```
 {
 	# this is remote folder location for files
