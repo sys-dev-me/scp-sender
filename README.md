@@ -3,10 +3,10 @@
 > server accept bamboo URL for download artifact
 ```
 {
-	# this is remote folder location for files
+	#remote folder location for files
 	"DefaultLocation":"/var/db/filestorage",
 
-	#where sored log of activity
+	#where stored log of activity
 	"LogFile":"application.log",
 
 	#who can send request to websocket
