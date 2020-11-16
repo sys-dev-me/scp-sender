@@ -1,10 +1,42 @@
 package main
 
-//import "path/filepath"
-import "os"
-import "encoding/json"
-import "fmt"
-import "errors"
+import (
+"os"
+"encoding/json"
+"fmt"
+"errors"
+"golang.org/x/crypto/ssh"
+)
+
+type Config struct {
+
+  RemoteLocation  string
+  Origin          string
+  LogFile         string
+  Userhome        string
+  Clients         []Client
+  Port            int
+	SSHKeysDir			string
+  HostKey         string
+  Web             WebSettings
+  Bamboo          BambooSettings
+  sshConfig       ssh.Config
+
+}
+
+type BambooSettings struct {
+  MountedDir      string
+  ArtifactFolder  string
+}
+
+type WebSettings struct {
+  Port            int
+	Build						int
+  RootPath        string
+  URLVariableName string
+  RootURL         string
+}
+
 
 func (this *Config) Load() *Config {
 

@@ -2,7 +2,8 @@ $(document).ready(function(){
 
 $('input[name="bamboo_artifact_url"]').val( "" );
 var idx = 0
-var hostname = "localhost"
+var hostname = "bamboo.macpaw.space/postman"
+//var hostname = "localhost"
 
 var clientCard = function ( client ) { 
 	tmp = '<address><strong>MacOS Version ' + client.Version+ '</strong><br />';
@@ -36,6 +37,7 @@ setID = function( id, content, client ) {
 		}
 
 		var socket = new WebSocket("ws://" + hostname + "/gathering", "Upgrade");
+		console.log ( "Defined" +  $('input[name="bamboo_artifact_url"]').val() )
 		socket.onopen = function(event) {
 			 socket.send($('input[name="bamboo_artifact_url"]').val() )
 				$('#exampleModal').modal('show');

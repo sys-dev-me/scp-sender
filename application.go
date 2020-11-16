@@ -2,11 +2,13 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 	"time"
 	"strings"
 	"os/user"
+	"io/ioutil"
 )
 
 type Application struct {
@@ -16,13 +18,23 @@ type Application struct {
 	Finger			string
 	Artifact	
 	Gathering
+	Status			bool
+	Error				string
+	PrivateKey	[]byte
+}
+
+
+func (this *Application ) PrintClients () bool{
+
+  for _, v := range this.Config.Clients {
+      fmt.Printf ( "Client %s\n:", v.IP )
+  }
+  return true
 }
 
 
 func ( this *Application ) logger ( logMessage string ) {
-
-	fmt.Printf ( "%t, %s\n", time.Now(), logMessage )
-
+  log.Println ( fmt.Sprintf ( "%t, %s", time.Now(), logMessage ) )
 }
 
 func (this *Application ) checkOrigin ( r *http.Request ) bool {
@@ -53,6 +65,14 @@ func (this *Application) Init () *Application {
 	this.Artifact.buildBasePath( this.Config.Bamboo)
 	this.Gathering.URLStatus = true
 	this.Version = 0.2
+	p, err := ioutil.ReadFile( strings.Join ( []string{this.Config.SSHKeysDir, this.Config.HostKey}, "/" ) )
+	if err != nil {
+		this.Error = fmt.Sprintf ( "%s", err )
+		this.Status = false
+	} else {
+		this.Status = true
+		this.PrivateKey = p
+	}
 
 	return this
 }

@@ -1,5 +1,5 @@
 {
-	"DefaultLocation":"/var/db/filestorage",
+	"RemoteLocation":"/var/db/filestorage",
 	"LogFile":"application.log",
 	"Origin":"localhost",
 	"Clients" : [
@@ -24,9 +24,11 @@
 			"Version":"10.12"
 		}],
 	"Port":22,
+	"SSHKeysDir":"keys",
 	"HostKey":"id_rsa",
 	"Web":{
 		"Port":3002,
+		"Build":1,
 		"RootPath":"./web",
 		"URLVariableName":"bamboo_url",
 		"RootURL":"http://localhost:3002/"

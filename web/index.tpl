@@ -67,7 +67,7 @@
 
 		<script src="{{.Config.Web.RootURL}}/resources/js/jquery/3.5.1/jquery.min.js"></script>
 		<script src="{{.Config.Web.RootURL}}/resources/bootstrap/js/bootstrap.min.js"></script>
-		<script src="{{.Config.Web.RootURL}}/resources/js/custom/default.js"></script>
+		<script src="{{.Config.Web.RootURL}}/resources/js/custom/default.js?buid={{.Config.Web.Build}}"></script>
 
 
 

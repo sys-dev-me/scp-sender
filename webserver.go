@@ -3,13 +3,17 @@ package main
 
 import (
 	"fmt"
-	//"log"
 	"net/http"
 	"time"
 	"html/template"
 )
 
-
+type WebServer struct {
+  Server      *http.ServeMux
+  Parent      *Application
+  Port        int
+  Index       *template.Template
+}
 
 func ( this *WebServer ) Init ( parent *Application ) {
 

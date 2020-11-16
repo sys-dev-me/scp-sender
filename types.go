@@ -1,18 +1,5 @@
 package main
 
-import (
-	"net/http"
-	"html/template"
-	"golang.org/x/crypto/ssh"
-)
-
-type WebServer struct {
-	Server			*http.ServeMux
-	Parent			*Application
-	Port				int
-	Index				*template.Template
-}
-
 type Gathering struct {
 	URLStatus			bool
 	
@@ -23,32 +10,6 @@ type Client struct {
 	Username	string
 	Version		string
 	Finger		string
-}
-
-type Config struct {	
-
-	Origin			string
-	LogFile			string
-	Userhome		string
-	Clients			[]Client
-	Port				int
-	HostKey			string
-	Web					WebSettings
-	Bamboo			BambooSettings
-	sshConfig		ssh.Config
-	
-}
-
-type BambooSettings struct {
-	MountedDir			string
-	ArtifactFolder	string
-}
-
-type WebSettings struct {
-	Port						int
-	RootPath				string
-	URLVariableName	string
-	RootURL					string
 }
 
 type Error struct {

@@ -5,30 +5,17 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
 	"os"
 	"strings"
-	"io/ioutil"
 	scp "github.com/bramvdbogaerde/go-scp"
-	//§"github.com/bramvdbogaerde/go-scp/auth"
 	"golang.org/x/crypto/ssh"
-	//"golang.org/x/net/websocket"
 	"github.com/gorilla/websocket"
 )
 
 var srv = websocket.Upgrader{}
 
-func (this *Application ) ReadClients () bool{
-
-	for _, v := range this.Config.Clients {
-			fmt.Printf ( "Client %s\n:", v.IP )
-	}
-	return true
-}
-
 func (this *Application ) Respond ( v Client ) (*Answer, error) {
 
-		//filename := "/var/log/system.log"
 		filename := this.Artifact.Filename
 		remoteFileName := this.Artifact.Remotefile
 		remoteDestination := "/var/db/filestorage"
@@ -40,24 +27,7 @@ func (this *Application ) Respond ( v Client ) (*Answer, error) {
 		sshConfig.HostKeyCallback = ssh.InsecureIgnoreHostKey()
 		sshConfig.HostKeyAlgorithms = []string{ssh.KeyAlgoRSA}
 
-		//privateKey, err := ioutil.ReadFile( this.Config.Userhome + "/.ssh/" + this.Config.HostKey )
-		privateKey, err := ioutil.ReadFile( "/keys/" + this.Config.HostKey )
-		if err != nil {
-			fmt.Printf ( "%v Error while read private key\n", time.Now())
-			v := new(Error)
-			v.Code = 1
-			v.Description = "Can't open key"
-
-			answ.Terminated = true
-			answ.Connected = false
-			answ.Filename = filename
-			answ.RemoteFile = strings.Join([]string{remoteDestination, remoteFileName}, "/")
-			answ.Status = false
-			answ.Errors = append ( answ.Errors, *v )
-			return answ, err
-		}
-
-		signer, err := ssh.ParsePrivateKey( privateKey )
+		signer, err := ssh.ParsePrivateKey( this.PrivateKey )
 
 		sshConfig.User = "DEFAULT_USER_CHANGE_IT_PLEASE"
 		sshConfig.Auth = []ssh.AuthMethod{ ssh.PublicKeys ( signer ) }
@@ -66,6 +36,7 @@ func (this *Application ) Respond ( v Client ) (*Answer, error) {
 			sshConfig.User = v.Username
 			client := scp.NewClient( fmt.Sprintf ( "%s:22", v.IP ), sshConfig)
 			f, _ := os.Open( filename )
+
 			answ.Client = v
 			answ.Filename = filename
 			answ.RemoteFile = strings.Join([]string{remoteDestination, remoteFileName}, "/")
@@ -140,6 +111,10 @@ func main () {
 	app				:= new( Application )
 
 	app.Init()
+	if !app.Status {
+		log.Println ( "Erorr while initializing application configuration: %v\n", app.Error )
+		os.Exit( 1 )
+	}
 	webserver.Init ( app )
 	go webserver.Start()
 
