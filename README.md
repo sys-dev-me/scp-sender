@@ -1,10 +1,10 @@
 # scp-sender
-# Configure server part. JSON format (comments should be deleted)
+> Configure server part. JSON format (comments should be deleted)
 > server accept bamboo URL for download artifact
 ```
 {
 	#remote folder location for files
-	"DefaultLocation":"/var/db/filestorage",
+	"RemoteLocation":"/var/db/filestorage",
 
 	#where stored log of activity
 	"LogFile":"application.log",
@@ -41,6 +41,10 @@
 		}],
 	#port for SSH
 	"Port":22,
+	# Web version of JS scripts
+	"Build":1,
+	# Keys storage folder
+	"SSHKeysDir":"/keys",
 	#key for connection
 	"HostKey":"id_rsa",
 	# settings for web server
