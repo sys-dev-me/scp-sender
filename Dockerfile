@@ -5,7 +5,7 @@ WORKDIR $GOPATH/src/scp-sender
 
 
 COPY *.go ./
-COPY .settings .
+COPY .settings .settings
 COPY web web
 
 RUN go get -d -v ./...
