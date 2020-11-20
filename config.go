@@ -27,6 +27,7 @@ type Config struct {
 type BambooSettings struct {
   MountedDir      string
   ArtifactFolder  string
+	DB							DBConfig
 }
 
 type WebSettings struct {
@@ -58,6 +59,9 @@ func (this *Config) Load() *Config {
 	defer jsonConfig.Close()
 
 	json.NewDecoder( jsonConfig ).Decode( &this )
+
+	fmt.Printf ( "Loaded: %+v\n", this.Bamboo )
+
 	return this
 }
 

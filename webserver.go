@@ -59,7 +59,10 @@ func ( this *WebServer ) DefaultHandler ( w http.ResponseWriter, r *http.Request
 	}
 
 	err2 := this.Index.Execute(w, this.Parent )
-
-		fmt.Printf ( "error execute template: %v\n", err2 )
+	if err2 != nil {
+		fmt.Printf ( "error execute template: %v\n", err2 ) 
+		return
+	}
+	fmt.Printf ( "error execute template: %v\n", err2 )
 
 }

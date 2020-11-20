@@ -62,16 +62,21 @@ func (this *Application) Init () *Application {
 	this.Config = new(Config).Load()
 	this.Postman = nil
 	this.Artifact = *new(Artifact)
-	this.Artifact.buildBasePath( this.Config.Bamboo)
+	this.Artifact.buildBasePath( this.Config.Bamboo )
 	this.Gathering.URLStatus = true
-	this.Version = 0.2
+
+	this.Version = 0.5
 	p, err := ioutil.ReadFile( strings.Join ( []string{this.Config.SSHKeysDir, this.Config.HostKey}, "/" ) )
 	if err != nil {
+
 		this.Error = fmt.Sprintf ( "%s", err )
 		this.Status = false
+
 	} else {
+
 		this.Status = true
 		this.PrivateKey = p
+
 	}
 
 	return this
@@ -87,6 +92,7 @@ func ( this *Application ) URLParse ( urlFileName string) {
 	p, err := url.ParseRequestURI ( urlFileName ) 
 	
 	if err != nil {
+
 		fmt.Printf ( "[error] Can't validate data: %v\n", err )
 		this.Gathering.URLStatus = false
 		return
@@ -95,17 +101,22 @@ func ( this *Application ) URLParse ( urlFileName string) {
 	}
  
 	pURL := strings.Split( p.Path, "/" )	
-	fmt.Printf ( "Extracted:\n%v\n",  pURL )
-	for _,v := range pURL {
-		fmt.Printf ( "Val: %s\n", v )
+	fmt.Printf ( "Extracted:%v\n",  pURL )
+	for idx,v := range pURL {
+		fmt.Printf ( "[%v] %s", idx, v )
 	}
+	fmt.Printf ( "Total: %v\n", len( pURL ) )
+	this.Artifact.SetConfig ( *this.Config )
 
 	this.Artifact.setFile ( pURL[ len(pURL) - 1 ])
+	this.Artifact.setLabel ( pURL[ 5 ] )
 	this.Artifact.getProject ( pURL[ 2 ] )
-	this.Artifact.addPath ( pURL[ len(pURL) - 2 ] )
 
-	this.Artifact.Remotefile = this.Artifact.Filename 
+	this.Artifact.Remotefile = strings.ReplaceAll ( this.Artifact.Filename, " ", "\\ ")
+
 	pathToFile, isFind := this.Artifact.findFile ()
+	fmt.Printf ( "Will be copied: %v\n", this.Artifact.Filename )
+	fmt.Printf ( "Path: %v\n", pathToFile )
 	if isFind {
 		this.Artifact.setFile ( pathToFile )
 	}
