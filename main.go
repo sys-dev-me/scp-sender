@@ -81,7 +81,9 @@ func (this *Application) DefaultHandler ( w http.ResponseWriter, r *http.Request
 	fmt.Printf ( "Received data\n" )
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Sec-WebSocket-Protocol", "Upgrade")
 	srv.CheckOrigin = this.checkOrigin
+	srv.Subprotocols = []string{ "hey", "Upgrade"}
 	c, err := srv.Upgrade(w, r, nil)
 
 	if err != nil {
